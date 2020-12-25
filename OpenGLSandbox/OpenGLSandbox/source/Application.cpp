@@ -29,11 +29,32 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
+	float positions [6] = {
+		-0.5f, -0.5f,
+		 0.0f,  0.5f,
+		 0.5f, -0.5f,
+	};
+
+	/*Variable which contains buffer id. 
+	Everything which we generate by OpenGL shoud have id (because of it state machine) */
+	unsigned int buffer; 
+
+	/* Generate buffer*/
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		/*
+		first parameter - Specifies what kind of primitives to render.
+		second parameter - Specifies the starting index in the enabled arrays
+		third parameter - Specifies the number of indices to be rendered.*/
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
