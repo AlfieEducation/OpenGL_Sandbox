@@ -116,6 +116,10 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(640, 480, "OpenGL Initial", NULL, NULL);
 	if (!window)
@@ -149,6 +153,10 @@ int main(void)
 		2, 3, 0
 	};
 
+	unsigned int vao;
+	GLCall(glGenVertexArrays(1, &vao));
+	GLCall(glBindVertexArray(vao));
+
 	/*Variable which contains buffer id. 
 	Everything which we generate by OpenGL shoud have id (because of it state machine) */
 	unsigned int buffer; 
@@ -179,6 +187,11 @@ int main(void)
 	ASSERT(location != -1);
 	GLCall(glUniform4f(location, 0.2f, 0.8f, 0.3f, 1.0f));
 
+	GLCall(glBindVertexArray(0));
+	GLCall(glUseProgram(0));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
 	float r = 0.0f;
 	float increment = 0.05f;
 	/* Loop until the user closes the window */
@@ -187,7 +200,15 @@ int main(void)
 		/* Render here */
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+		GLCall(glUseProgram(shader));
 		GLCall(glUniform4f(location, r, 0.8f, 0.3f, 1.0f));
+
+		GLCall(glBindVertexArray(vao));
+		//GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+		//GLCall(glEnableVertexAttribArray(0));
+		//GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
 		if (r > 1.0f)
 			increment = -0.05f;
