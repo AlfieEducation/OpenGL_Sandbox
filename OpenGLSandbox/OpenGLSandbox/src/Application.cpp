@@ -111,10 +111,17 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	float positions [6] = {
-		-0.5f, -0.5f,
-		 0.0f,  0.5f,
-		 0.5f, -0.5f,
+	float positions [] = {
+		-0.5f, -0.5f, //0
+		 0.5f, -0.5f, //1
+		 0.5f,  0.5f, //2
+		-0.5f,  0.5f, //3
+	};
+
+	// Indices elements must be unsigned
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
 	};
 
 	/*Variable which contains buffer id. 
@@ -129,7 +136,14 @@ int main(void)
 	/* We say to OpenGL what exactly It should draw from our data*/
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-	
+
+	unsigned int ibo;
+
+	/* Generate buffer*/
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
 
 	unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
@@ -142,11 +156,11 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* Works with data which was binded latest (in out case positions array)
+		/*  Render primitives from array data
 		first parameter - Specifies what kind of primitives to render.
-		second parameter - Specifies the starting index in the enabled arrays
-		third parameter - Specifies the number of indices to be rendered.*/
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		second parameter - Specifies the type of the values in indices. Must be one of GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
+		third parameter - Specifies an offset of the first index in the array in the data store of the buffer currently bound to the GL_ELEMENT_ARRAY_BUFFER target.*/
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr); //6 - number of indices. Must be UNSIGNED INT
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
