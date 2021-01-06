@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "VertexArray.h"
 #include "Shader.h"
 
@@ -74,20 +75,20 @@ int main(void)
 		shader.Unbind();
 		vb.UnBind();
 		ib.UnBind();
+
+		Renderer renderer;
 	
 		float r = 0.0f;
 		float increment = 0.05f;
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
-			/* Render here */
-			GLCall(glClear(GL_COLOR_BUFFER_BIT));
+			renderer.Clear();
 
 			shader.Bind();
 			shader.SetUniform4f("u_Color", r, 0.8f, 0.3f, 1.0f);
 
-			va.Bind();
-			ib.Bind();
+			renderer.Draw(va, ib, shader);
 
 			if (r > 1.0f)
 				increment = -0.05f;
@@ -95,12 +96,6 @@ int main(void)
 				increment = 0.05f;
 
 			r += increment;
-
-			/*  Render primitives from array data
-			first parameter - Specifies what kind of primitives to render.
-			second parameter - Specifies the type of the values in indices. Must be one of GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
-			third parameter - Specifies an offset of the first index in the array in the data store of the buffer currently bound to the GL_ELEMENT_ARRAY_BUFFER target.*/
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr)); //6 - number of indices. Must be UNSIGNED INT
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
